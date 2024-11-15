@@ -1,0 +1,143 @@
+<!Doctype html>
+<html>
+    <head>
+       <!--Creating a responsive on any display-->
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>HangMan The Game</title>
+       <style>
+        body{
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 2rem;
+            background-color: blue;
+        }
+
+        h1{
+            color: chocolate;
+            margin-bottom: 2rem;
+        }
+
+        .game-container{
+            background-color: aquamarine;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+            max-width: 0 auto;
+        }
+
+        #word-display{
+            font-size: 2rem;
+            letter-spacing: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        #guess-input{
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            width: 50px;
+            text-align: center;
+            margin: 1rem;
+        }
+
+        #guess-button{
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            background-color: darkgray;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #guess-button:hover{
+            background-color: black;
+        }
+
+        #message{
+            margin: 1rem 0;
+            font-size: 1.2rem;
+            min-height: 1.5rem;
+        }
+       </style>
+    </head>
+    <body>
+        <header>
+            <h1>HangMan The Game</h1>
+        </header>
+        <!--Creating a main container for the game-->
+        <main class="game-container">
+            <div id="word-display"></div>
+            <!--Creating an input field for letter guesses-->
+            <input type="text" id="guess-input" maxlength="1" placeholder="A">
+            <button id="guess-button">Guess!</button>
+            <div id="message"></div>
+            <div id="guesses-left"></div>
+            <div id="guessed-letters"></div>
+        </main>
+        <script>
+            //Create a variable to store the word to be guessed from a list of words
+            const words = ['Jesus', 'Varric', 'School', 'CSS', 'Hawke', 'CSharp', 'Lol', 'Stfu', 'Superman'];
+            let word = words[Math.floor(Math.random() * words.length)];
+            let wordArray = word.split('');
+            let displayArray = wordArray.map(() => '_');
+            let guessesLeft = 8;
+            let guessedLetters = [];
+            
+            //Create a function
+            function updateDisplay(){
+                document.getElementById('word-display').textContent = displayArray.join('');
+                document.getElementById('guesses-left').textContent = `Guesses Left: ${guessesLeft}`;
+                document.getElementById('guessed-letters').textContent =`Guessed Letters: ${guessedLetters.join(',')}`;
+            }
+
+            function makeGuesses(){
+                let input = document.getElementById('guess-input');
+                let guess = input.value.toLowerCase();
+                
+                if(!guess.match(/[a-z]/)){
+                    document.getElementById('message').textContent = 'Please enter a letter from a-z';
+                    return;
+                }
+
+                if(guessedLetters.includes(guess)){
+                    document.getElementById('message').textContent = 'You have already guessed that letter';
+                    return;
+                }
+
+                guessedLetters.push(guess);
+
+                if(wordArray.includes(guess)){
+                    wordArray.forEach((letter, index) => {
+                        if(letter == guess){
+                            displayArray[index] = guess;
+                        }
+                    });
+                }else{
+                    guessesLeft--;
+                    document.getElementById('message').textContent = 'Incorrect guess';
+                }
+
+                updateDisplay();
+
+                if(!displayArray.includes('_')){
+                    document.getElementById('message').textContent = "Congrats! You won!!";
+                    document.getElementById('guess-button').disabled = true;
+                }else if(guessesLeft === 0){
+                    document.getElementById('message').textContent = 'Game Over! the word was: ${words}';
+                    document.getElementById('guess-button').disabled = true;
+                }
+            }
+
+            //Add a click event listener to the guess button
+            document.getElementById('guess-button').addEventListener('click', makeGuesses)
+
+            document.getElementById('guess-input').addEventListener('keyup', function(event){
+                if(event.key === 'Enter'){
+                    makeGuesses();
+                }
+            });
+
+            updateDisplay();
+        </script>
+    </body>
+</html>
